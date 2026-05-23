@@ -1,0 +1,8 @@
+Gateway of last resort is 10.10.11.1 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 10.10.11.1
+      10.0.0.0/8 is variably subnetted, 4 subnets, 2 masks
+C        10.10.11.0/24 is directly connected, Ethernet0/0
+L        10.10.11.2/32 is directly connected, Ethernet0/0
+C        10.20.11.0/24 is directly connected, Ethernet0/1
+L        10.20.11.2/32 is directly connected, Ethernet0/1

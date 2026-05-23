@@ -1,0 +1,226 @@
+
+!
+version 15.1
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname CORE-DC
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+clock timezone WIB 7 0
+no ipv6 cef
+ipv6 multicast rpf use-bgp
+!
+ip cef
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+!
+!
+vlan internal allocation policy ascending
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ no shutdown
+ no switchport
+ ip address 10.10.0.1 255.255.255.0
+!
+interface Ethernet0/1
+ no shutdown
+ switchport access vlan 10
+ switchport mode access
+ duplex auto
+!
+interface Ethernet0/2
+ no shutdown
+ switchport access vlan 20
+ switchport mode access
+ duplex auto
+!
+interface Ethernet0/3
+ no shutdown
+ no switchport
+ ip address 10.30.0.1 255.255.255.0
+!
+interface Ethernet1/0
+ no shutdown
+ no switchport
+ ip address 10.10.11.1 255.255.255.0
+!
+interface Ethernet1/1
+ no shutdown
+ no switchport
+ ip address 10.10.12.1 255.255.255.0
+!
+interface Ethernet1/2
+ no shutdown
+ no switchport
+ ip address 10.10.13.1 255.255.255.0
+!
+interface Ethernet1/3
+ no shutdown
+ no switchport
+ ip address 10.10.14.1 255.255.255.0
+!
+interface Ethernet2/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet2/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet2/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet2/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet3/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet3/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet3/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet3/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet4/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet4/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet4/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet4/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet5/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet5/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet5/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet5/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet6/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet6/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet6/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet6/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet7/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet7/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet7/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet7/3
+ no shutdown
+ duplex auto
+!
+interface Vlan10
+ no shutdown
+ ip address 10.10.10.1 255.255.255.0
+ ip policy route-map PBR
+!
+interface Vlan20
+ no shutdown
+ ip address 10.10.20.1 255.255.255.0
+ ip policy route-map PBR
+!
+!
+no ip http server
+!
+ip route 0.0.0.0 0.0.0.0 10.10.0.2
+ip route 0.0.0.0 0.0.0.0 10.30.0.2 100
+ip route 10.20.11.0 255.255.255.0 10.30.0.2 100
+ip route 10.20.12.0 255.255.255.0 10.30.0.2 100
+ip route 10.20.13.0 255.255.255.0 10.30.0.2 100
+ip route 10.20.14.0 255.255.255.0 10.30.0.2 100
+!
+access-list 100 permit ip 10.10.10.0 0.0.0.255 any
+access-list 101 permit tcp 10.10.20.0 0.0.0.255 any eq www
+access-list 101 permit tcp 10.10.20.0 0.0.0.255 any eq 443
+!
+route-map PBR permit 10
+ match ip address 100
+ set ip next-hop 10.10.0.2
+!
+route-map PBR permit 20
+ match ip address 101
+ set ip next-hop 10.30.0.2
+!
+route-map PBR permit 30
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login
+!
+end
