@@ -6,7 +6,7 @@ Proyek ini bertujuan untuk mengoptimalkan alur trafik pada jaringan perusahaan y
 Masalah utama yang diselesaikan adalah keterbatasan routing konvensional yang hanya mempertimbangkan alamat tujuan. Dengan mengombinasikan **Policy-Based Routing (PBR)** dan **Access Control List (ACL)**, trafik diarahkan berdasarkan **Source IP** dan **Tipe Protokol/Aplikasi (Port)**.
 
 ## Network Topology
-![Network Topology](topology/topology_diagram.png)
+![Network Topology](Topology/topology_diagram.png)
 *Gambar: Arsitektur Jaringan pada PNETLab*
 
 ### Infrastructure Details:
@@ -79,23 +79,32 @@ ip route 0.0.0.0 0.0.0.0 10.30.0.2 100
 Pengujian dilakukan dari End-Device (Server) untuk memverifikasi ketepatan implementasi kebijakan PBR berdasarkan skenario trafik.
 
 ### 1. Skenario 1: Executive Traffic (VLAN 10)
-*   **Kriteria:** Seluruh trafik diarahkan melalui jalur **DC Active**.
+*   **Target:** Memastikan seluruh trafik dari Executive diarahkan ke jalur DC Active.
+*   **Metode:** Pengujian `traceroute` standar dari end device VLAN 10 ke arah internet (8.8.8.8).
 *   **Analisis:** Hop ke-2 menunjukkan IP `10.10.0.2` (Router DC Active).
-*   ![Test VLAN 10](screenshots/vlan10_traceroute.png)
+*   ![Test VLAN 10](Topology/Pengujian/Pengujian_1.png)
+*Gambar: Pengujian 1*
 
 ### 2. Skenario 2: Staff Web Offloading (VLAN 20)
-*   **Metode:** Menggunakan perintah `traceroute -T -p 80` untuk menyimulasi trafik HTTP.
+*   **Target:** Memastikan trafik Web (HTTP/HTTPS) dari Staff dialihkan ke jalur DRC Backup.
+*   **Metode:** Menggunakan perintah `traceroute -T -p 80` dan `traceroute -T -p 443` untuk menyimulasi trafik HTTP.
 *   **Analisis:** Trafik berhasil diidentifikasi oleh ACL 101 dan dibelokkan menuju **CORE-DRC (10.30.0.2)**.
-*   ![Test VLAN 20 Web](screenshots/vlan20_web_traceroute.png)
+*   ![Test VLAN 20 Web](Topology/Pengujian/Pengujian_2_3.png)
+*Gambar: Pengujian 2*
 
 ### 3. Skenario 3: Staff Other Traffic (ICMP)
+*   **Target:** Memastikan trafik non-web seperti ICMP tetap mengikuti jalur routing normal.
+*   **Metode:** Pengujian `traceroute` (ICMP) dari end device VLAN 20.
 *   **Analisis:** Karena PBR hanya untuk trafik yang menuju port TCP 80/443, maka trafik ICMP (Ping/Traceroute) tetap mengikuti jalur routing normal (lewat DC).
-*   !
-### 4. Skenario 4: Failover Mechanism
-*   **Kondisi:** Jalur utama DRC dimatikan secara administratif (*Shutdown*).
-*   **Hasil:** PBR mendeteksi jalur tidak tersedia, sehingga trafik secara otomatis melakukan *fallback* ke jalur DC melalui mekanisme *Floating Static Route* (AD 100).
-*   ![Test Failover](screenshots/failover_traceroute.png)
-
+*   ![Test VLAN 20 ICMP](Topology/Pengujian/Pengujian_2_3.png)
+*Gambar: Pengujian 3*
+### 4. Skenario 4: Failover
+*   **Target:** Memastikan ketersediaan jaringan dan pengalihan trafik otomatis jika jalur DRC mengalami gangguan.
+*   **Metode:** Mematikan interface yang menuju ke arah CORE-DRC dan melakukan pengujian `traceroute -T -p 80` dan `traceroute -T -p 443` kembali dari VLAN 20.
+*   **Hasil:** PBR mendeteksi jalur tidak tersedia, sehingga trafik secara otomatis melakukan *fallback* ke jalur DC melalui *Floating Static Route* (AD 100).
+*   ![Interface Down](Topology/Pengujian/Interface_down.png)
+*   ![Test Failover](Topology/Pengujian/Pengujian_4.png)
+*Gambar: Pengujian 4*
 ---
 
 ## Lab Setup Instructions
@@ -103,8 +112,8 @@ Pengujian dilakukan dari End-Device (Server) untuk memverifikasi ketepatan imple
 Untuk menjalankan simulasi ini di lingkungan PNETLab:
 
 1.  **Topology:** Import file `.unl` yang berada di folder `topology/`.
-2.  **Images:** Gunakan **Cisco IOL L3** (`i86bi-linux-l3-adventerprisek9-ms.15.4.1T.bin` atau versi serupa).
+2.  **Images:** Gunakan **Cisco IOL** (`i86bi-linux-l3-ipbase-12.4.bin` atau versi serupa).
 3.  **Configurations:** 
-    *   Seluruh konfigurasi *startup* perangkat tersedia di folder `configs/`.
-    *   Jika mengimpor secara manual, pastikan melakukan perintah `write memory` pada setiap node.
+    *   Seluruh konfigurasi *startup* perangkat tersedia di folder `Konfigurasi/configs`.
+    *   Pastikan melakukan perintah `write memory` pada setiap node.
 4.  **Verification:** Gunakan terminal pada Server 1 & 2 untuk melakukan `traceroute` dengan parameter port untuk memicu ACL.
