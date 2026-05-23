@@ -117,3 +117,11 @@ Untuk menjalankan simulasi ini di lingkungan PNETLab:
     *   Seluruh konfigurasi *startup* perangkat tersedia di folder `Konfigurasi/configs`.
     *   Pastikan melakukan perintah `write memory` pada setiap node.
 4.  **Verification:** Gunakan terminal pada Server 1 & 2 untuk melakukan `traceroute` dengan parameter port untuk memicu ACL.
+
+## Team Members
+1. Raihan Faiz Ramadhan
+2. Eka Prasetya A. N
+3. Rizki Putra
+4. M. Andhika Abellyosa
+5. Angellina Putri Cetra Adellia
+6. M. Rizki Saputra 
